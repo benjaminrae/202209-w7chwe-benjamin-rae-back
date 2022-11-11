@@ -1,17 +1,17 @@
 import type { Response } from "express";
 import CustomError from "../../CustomError/CustomError";
-import { generalError } from "./errors";
+import { generalError, unknownEndpoint } from "./errors";
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("Given the middleware generalError", () => {
-  const res: Partial<Response> = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
+const res: Partial<Response> = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn(),
+};
 
+describe("Given the middleware generalError", () => {
   describe("When it is invoked with an error with message 'Something went wrong', statusCode 404 and publicMessage 'Something went wrong' and a response", () => {
     test("Then response's method status should be invoked with 500 and json with the public message", () => {
       const errorMessage = "Something went wrong";
@@ -38,6 +38,20 @@ describe("Given the middleware generalError", () => {
 
       expect(res.status).toHaveBeenCalledWith(statusCode);
       expect(res.json).toHaveBeenCalledWith({ error: expectedErrorMessage });
+    });
+  });
+});
+
+describe("Given the unknownEndpoint middleware", () => {
+  describe("When it receives a request and a response", () => {
+    test("Then response's method status should be invoked with 404 and json with the message 'Unknown Endpoint'", () => {
+      const statusCode = 404;
+      const message = "Unknown Endpoint";
+
+      unknownEndpoint(null, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(statusCode);
+      expect(res.json).toHaveBeenCalledWith({ message });
     });
   });
 });
