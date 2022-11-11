@@ -1,4 +1,4 @@
-import environment from "../loadEnvironment";
+import environment from "../loadEnvironment.js";
 import mongoose from "mongoose";
 
 const { mongoDebug } = environment;
