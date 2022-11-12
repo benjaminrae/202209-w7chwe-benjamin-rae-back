@@ -1,14 +1,19 @@
 import environment from "../../loadEnvironment.js";
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import {
   loginUserErrors,
   registerUserErrors,
 } from "../../CustomError/errors.js";
-import type { LoginUserBody, RegisterUserBody } from "./types";
+import type {
+  LoginUserBody,
+  RegisterUserBody,
+  UserTokenPayload,
+} from "./types";
 import User from "../../database/models/User.js";
 
-const { saltLength } = environment;
+const { saltLength, jwtSecret } = environment;
 
 export const registerUser = async (
   req: Request<
@@ -70,5 +75,16 @@ export const loginUser = async (
     if (!(await bcrypt.compare(password, user.password))) {
       next(loginUserErrors.incorrectPassword);
     }
-  } catch {}
+
+    const tokenPayload: UserTokenPayload = {
+      username,
+      id: user._id.toString(),
+    };
+
+    const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: "2d" });
+
+    res.status(200).json({ token });
+  } catch (error: unknown) {
+    next(error);
+  }
 };

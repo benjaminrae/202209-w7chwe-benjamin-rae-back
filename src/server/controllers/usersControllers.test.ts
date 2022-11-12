@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { loginUserErrors, registerUserErrors } from "../../CustomError/errors";
 import type { LoginUserBody, RegisterUserBody } from "./types";
 import { loginUser, registerUser } from "./usersControllers";
@@ -142,6 +143,33 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(loginUserErrors.incorrectPassword);
+    });
+  });
+
+  describe("When it receives a request with username 'admin', password 'admin123', and the user is on the database and the passwords match", () => {
+    test("Then response's method status should be invoked with 200 and json with a token", async () => {
+      const body: LoginUserBody = {
+        username: "admin",
+        password: "admin123",
+      };
+      req.body = body;
+      const expectedStatus = 200;
+      const expectedBody = { token: "token" };
+
+      User.findOne = jest.fn().mockResolvedValue({
+        username: body.username,
+        password: "hashedpassword",
+        _id: new mongoose.Types.ObjectId(),
+      });
+
+      bcrypt.compare = jest.fn().mockResolvedValue(true);
+
+      jwt.sign = jest.fn().mockReturnValue("token");
+
+      await loginUser(req as Request, res as Response, next as NextFunction);
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith(expectedBody);
     });
   });
 });

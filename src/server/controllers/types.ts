@@ -1,4 +1,5 @@
 import type { InferSchemaType } from "mongoose";
+import type { JwtPayload } from "jsonwebtoken";
 import type { userSchema } from "../../database/models/User";
 export interface RegisterUserBody extends LoginUserBody {
   confirmPassword: string;
@@ -11,3 +12,8 @@ export interface LoginUserBody {
 }
 
 export type UserStructure = InferSchemaType<typeof userSchema>;
+
+export interface UserTokenPayload extends JwtPayload {
+  username: string;
+  id: string;
+}

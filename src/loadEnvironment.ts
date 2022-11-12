@@ -8,6 +8,7 @@ interface Environment {
   mongoDebug: boolean;
   mongoDbUri: string;
   saltLength: number;
+  jwtSecret: string;
 }
 
 const {
@@ -16,6 +17,7 @@ const {
   MONGO_DEBUG: mongoDebug,
   MONGO_DB_URI: mongoDbUri,
   SALT_LENGTH: saltLength,
+  JWT_SECRET: jwtSecret,
 } = process.env;
 
 const environment: Environment = {
@@ -24,6 +26,7 @@ const environment: Environment = {
   mongoDebug: mongoDebug === "true",
   mongoDbUri,
   saltLength: +saltLength,
+  jwtSecret,
 };
 
 export default environment;
