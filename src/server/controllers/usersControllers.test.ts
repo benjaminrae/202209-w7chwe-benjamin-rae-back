@@ -54,7 +54,7 @@ describe("Given a registerUser controller", () => {
         username: body.username,
         email: body.email,
         password: hashedPassword,
-        id,
+        _id: id,
       });
 
       await registerUser(req as Request, res as Response, null);
@@ -64,8 +64,7 @@ describe("Given a registerUser controller", () => {
         user: {
           username: body.username,
           email: body.email,
-          password: hashedPassword,
-          id,
+          id: id.toString(),
         },
       });
     });

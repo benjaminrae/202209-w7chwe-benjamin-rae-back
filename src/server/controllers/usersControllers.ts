@@ -32,7 +32,15 @@ export const registerUser = async (
       password: hashedPassword,
     });
 
-    res.status(201).json({ user: newUser });
+    res
+      .status(201)
+      .json({
+        user: {
+          username: newUser.username,
+          email: newUser.email,
+          id: newUser._id.toString(),
+        },
+      });
   } catch (error: unknown) {
     if ((error as Error).message.includes("duplicate key")) {
       next(registerUserErrors.alreadyRegistered);
