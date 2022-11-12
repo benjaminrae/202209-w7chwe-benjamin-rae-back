@@ -14,7 +14,7 @@ const next = jest.fn();
 
 describe("Given a registerUser controller", () => {
   describe("When it receives a request with username 'postman', email 'postman@correos.es', password: lettersandparcels, confirmPassword: packages", () => {
-    test("Then next should be called with an error with message 'Passwords don't match'", () => {
+    test("Then next should be called with an error with message 'Passwords don't match'", async () => {
       const body: RegisterUserBody = {
         username: "postman",
         email: "postman@correos.es",
@@ -23,7 +23,7 @@ describe("Given a registerUser controller", () => {
       };
       req.body = body;
 
-      registerUser(req as Request, null, next as NextFunction);
+      await registerUser(req as Request, null, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(registerUserErrors.noPasswordMatch);
     });
