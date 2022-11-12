@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validate } from "express-validation";
 import { loginUser, registerUser } from "../controllers/usersControllers.js";
+import loginUserSchema from "../schemas/loginUserSchema.js";
 import registerUserSchema from "../schemas/registerUserSchema.js";
 import routes from "./routes.js";
 
@@ -15,6 +16,10 @@ usersRouter.post(
   registerUser
 );
 
-usersRouter.post(loginRoute, loginUser);
+usersRouter.post(
+  loginRoute,
+  validate(loginUserSchema, {}, { abortEarly: false }),
+  loginUser
+);
 
 export default usersRouter;
