@@ -1,9 +1,9 @@
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import { generalError, unknownEndpoint } from "./middleware/errors";
-import routes from "./routers/routes";
-import usersRouter from "./routers/usersRouter";
+import { generalError, unknownEndpoint } from "./middleware/errors.js";
+import routes from "./routers/routes.js";
+import usersRouter from "./routers/usersRouter.js";
 
 const { usersRoute } = routes;
 

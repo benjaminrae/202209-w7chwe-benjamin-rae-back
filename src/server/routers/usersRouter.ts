@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { validate } from "express-validation";
-import { registerUser } from "../controllers/usersControllers";
-import registerUserSchema from "../schemas/registerUserSchema";
-import routes from "./routes";
+import { registerUser } from "../controllers/usersControllers.js";
+import registerUserSchema from "../schemas/registerUserSchema.js";
+import routes from "./routes.js";
 
 const { registerRoute } = routes;
 
