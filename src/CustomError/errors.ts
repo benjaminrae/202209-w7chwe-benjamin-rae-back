@@ -13,3 +13,17 @@ export const registerUserErrors = {
     "User is already registered"
   ),
 };
+
+export const loginUserErrors = {
+  userNotFound: new CustomError(
+    "Incorrect username",
+    401,
+    "Incorrect username or password"
+  ),
+
+  incorrectPassword: new CustomError(
+    "Incorrect password",
+    401,
+    "Incorrect username or password"
+  ),
+};

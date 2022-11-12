@@ -1,8 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { registerUserErrors } from "../../CustomError/errors";
-import type { RegisterUserBody } from "./types";
-import { registerUser } from "./usersControllers";
+import jwt from "jsonwebtoken";
+import { loginUserErrors, registerUserErrors } from "../../CustomError/errors";
+import type { LoginUserBody, RegisterUserBody } from "./types";
+import { loginUser, registerUser } from "./usersControllers";
 import User from "../../database/models/User";
 import mongoose from "mongoose";
 
@@ -103,6 +104,72 @@ describe("Given a registerUser controller", () => {
       await registerUser(req as Request, null, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(bcryptError);
+    });
+  });
+});
+
+describe("Given a loginUser controller", () => {
+  describe("When it receives a request with username 'timmy', password '12345678' and the user is not in the database", () => {
+    test("Then next should be invoked with an error with status 401 and message 'Incorrect username or password'", async () => {
+      const body: LoginUserBody = {
+        username: "timmy",
+        password: "12345678",
+      };
+      req.body = body;
+
+      User.findOne = jest.fn().mockResolvedValue(null);
+
+      await loginUser(req as Request, null, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(loginUserErrors.userNotFound);
+    });
+  });
+
+  describe("When it receives a request with username 'admin', password '12345678' and the user is on the database but the password doesn't match", () => {
+    test("Then next should be invoked with status 401 and message 'Incorrect username or password'", async () => {
+      const body: LoginUserBody = {
+        username: "admin",
+        password: "12345678",
+      };
+      req.body = body;
+
+      User.findOne = jest.fn().mockResolvedValue({
+        username: body.username,
+        password: "hashedpassword",
+      });
+
+      bcrypt.compare = jest.fn().mockResolvedValue(false);
+
+      await loginUser(req as Request, res as Response, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(loginUserErrors.incorrectPassword);
+    });
+  });
+
+  describe("When it receives a request with username 'admin', password 'admin123', and the user is on the database and the passwords match", () => {
+    test("Then response's method status should be invoked with 200 and json with a token", async () => {
+      const body: LoginUserBody = {
+        username: "admin",
+        password: "admin123",
+      };
+      req.body = body;
+      const expectedStatus = 200;
+      const expectedBody = { token: "token" };
+
+      User.findOne = jest.fn().mockResolvedValue({
+        username: body.username,
+        password: "hashedpassword",
+        _id: new mongoose.Types.ObjectId(),
+      });
+
+      bcrypt.compare = jest.fn().mockResolvedValue(true);
+
+      jwt.sign = jest.fn().mockReturnValue("token");
+
+      await loginUser(req as Request, res as Response, next as NextFunction);
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith(expectedBody);
     });
   });
 });
