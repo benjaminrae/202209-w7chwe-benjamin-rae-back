@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 import { registerUserErrors } from "../../CustomError/errors.js";
 import type { RegisterUserBody } from "./types";
 import User from "../../database/models/User.js";
-import type { MongoServerError } from "mongodb";
 
 const { saltLength } = environment;
 
@@ -21,6 +20,7 @@ export const registerUser = async (
 
   if (password !== confirmPassword) {
     next(registerUserErrors.noPasswordMatch);
+    return;
   }
 
   try {
