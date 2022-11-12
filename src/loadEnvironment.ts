@@ -7,6 +7,7 @@ interface Environment {
   debug: string;
   mongoDebug: boolean;
   mongoDbUri: string;
+  saltLength: number;
 }
 
 const {
@@ -14,6 +15,7 @@ const {
   DEBUG: debug,
   MONGO_DEBUG: mongoDebug,
   MONGO_DB_URI: mongoDbUri,
+  SALT_LENGTH: saltLength,
 } = process.env;
 
 const environment: Environment = {
@@ -21,6 +23,7 @@ const environment: Environment = {
   debug,
   mongoDebug: mongoDebug === "true",
   mongoDbUri,
+  saltLength: +saltLength,
 };
 
 export default environment;
