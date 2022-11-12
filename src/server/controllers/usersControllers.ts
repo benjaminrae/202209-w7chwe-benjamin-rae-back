@@ -74,6 +74,7 @@ export const loginUser = async (
 
     if (!(await bcrypt.compare(password, user.password))) {
       next(loginUserErrors.incorrectPassword);
+      return;
     }
 
     const tokenPayload: UserTokenPayload = {

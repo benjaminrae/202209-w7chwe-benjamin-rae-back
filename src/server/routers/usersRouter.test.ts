@@ -8,7 +8,7 @@ import routes from "./routes";
 import { getRandomUser } from "../../factories/usersFactory";
 import environment from "../../loadEnvironment";
 import User from "../../database/models/User";
-import type { RegisterUserBody } from "../controllers/types";
+import type { LoginUserBody, RegisterUserBody } from "../controllers/types";
 
 const { saltLength } = environment;
 
@@ -32,6 +32,7 @@ afterAll(async () => {
 
 describe("Given the POST /users/register endpoint", () => {
   const registerEndpoint = `${routes.usersRoute}${routes.registerRoute}`;
+
   describe("When it receives a request with no user details in the body", () => {
     test("Then it should respond with a message that starts with 'The details you provided don't meet the requirements:' and status 400", async () => {
       const expectedStatus = 400;
@@ -85,6 +86,47 @@ describe("Given the POST /users/register endpoint", () => {
       expect(response.body.user).toHaveProperty("username", newUser.username);
       expect(response.body.user).toHaveProperty("email", newUser.email);
       expect(response.body.user).toHaveProperty("id");
+    });
+  });
+});
+
+describe("Given a POST /users/login endpoint", () => {
+  const loginEndpoint = `${routes.usersRoute}${routes.loginRoute}`;
+
+  describe(`When it receives a request with the username "${user.username}" and password "${unhashedPassword}" of a user that is already in the database`, () => {
+    test("Then it should respond with status 200 and a token", async () => {
+      const body: LoginUserBody = {
+        username: user.username,
+        password: unhashedPassword,
+      };
+      const expectedStatus = 200;
+
+      const response = await request(app)
+        .post(loginEndpoint)
+        .send(body)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("token");
+    });
+  });
+
+  describe(`When it receives a request with the username "${user.username} and incorrect password "12345678"`, () => {
+    test("Then it should respond with status 401 and a message 'Incorrect username or password'", async () => {
+      const body: LoginUserBody = {
+        username: user.username,
+        password: "12345678",
+      };
+      const expectedStatus = 401;
+
+      const response = await request(app)
+        .post(loginEndpoint)
+        .send(body)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty(
+        "error",
+        "Incorrect username or password"
+      );
     });
   });
 });
