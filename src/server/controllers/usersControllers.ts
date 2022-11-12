@@ -1,8 +1,11 @@
 import environment from "../../loadEnvironment.js";
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { registerUserErrors } from "../../CustomError/errors.js";
-import type { RegisterUserBody } from "./types";
+import {
+  loginUserErrors,
+  registerUserErrors,
+} from "../../CustomError/errors.js";
+import type { LoginUserBody, RegisterUserBody } from "./types";
 import User from "../../database/models/User.js";
 
 const { saltLength } = environment;
@@ -32,15 +35,13 @@ export const registerUser = async (
       password: hashedPassword,
     });
 
-    res
-      .status(201)
-      .json({
-        user: {
-          username: newUser.username,
-          email: newUser.email,
-          id: newUser._id.toString(),
-        },
-      });
+    res.status(201).json({
+      user: {
+        username: newUser.username,
+        email: newUser.email,
+        id: newUser._id.toString(),
+      },
+    });
   } catch (error: unknown) {
     if ((error as Error).message.includes("duplicate key")) {
       next(registerUserErrors.alreadyRegistered);
@@ -49,4 +50,20 @@ export const registerUser = async (
 
     next(error);
   }
+};
+
+export const loginUser = async (
+  req: Request<Record<string, unknown>, Record<string, unknown>, LoginUserBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      next(loginUserErrors.userNotFound);
+    }
+  } catch {}
 };

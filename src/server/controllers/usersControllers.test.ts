@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { registerUserErrors } from "../../CustomError/errors";
-import type { RegisterUserBody } from "./types";
-import { registerUser } from "./usersControllers";
+import { loginUserErrors, registerUserErrors } from "../../CustomError/errors";
+import type { LoginUserBody, RegisterUserBody } from "./types";
+import { loginUser, registerUser } from "./usersControllers";
 import User from "../../database/models/User";
 import mongoose from "mongoose";
 
@@ -103,6 +103,24 @@ describe("Given a registerUser controller", () => {
       await registerUser(req as Request, null, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(bcryptError);
+    });
+  });
+});
+
+describe("Given a loginUser controller", () => {
+  describe("When it receives a request with username 'timmy', password '12345678' and the user is not in the database", () => {
+    test("Then next shoud be invoked with an error with status 401 and message 'Incorrect username or password'", async () => {
+      const body: LoginUserBody = {
+        username: "timmy",
+        password: "12345678",
+      };
+      req.body = body;
+
+      User.findOne = jest.fn().mockResolvedValue(null);
+
+      await loginUser(req as Request, null, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(loginUserErrors.userNotFound);
     });
   });
 });
