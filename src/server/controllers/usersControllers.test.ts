@@ -109,7 +109,7 @@ describe("Given a registerUser controller", () => {
 
 describe("Given a loginUser controller", () => {
   describe("When it receives a request with username 'timmy', password '12345678' and the user is not in the database", () => {
-    test("Then next shoud be invoked with an error with status 401 and message 'Incorrect username or password'", async () => {
+    test("Then next should be invoked with an error with status 401 and message 'Incorrect username or password'", async () => {
       const body: LoginUserBody = {
         username: "timmy",
         password: "12345678",
@@ -121,6 +121,27 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, null, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(loginUserErrors.userNotFound);
+    });
+  });
+
+  describe("When it receives a request with username 'admin', password '12345678' and the user is on the database but the password doesn't match", () => {
+    test("Then next should be invoked with status 401 and message 'Incorrect username or password'", async () => {
+      const body: LoginUserBody = {
+        username: "admin",
+        password: "12345678",
+      };
+      req.body = body;
+
+      User.findOne = jest.fn().mockResolvedValue({
+        username: body.username,
+        password: "hashedpassword",
+      });
+
+      bcrypt.compare = jest.fn().mockResolvedValue(false);
+
+      await loginUser(req as Request, res as Response, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(loginUserErrors.incorrectPassword);
     });
   });
 });

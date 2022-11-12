@@ -64,6 +64,11 @@ export const loginUser = async (
 
     if (!user) {
       next(loginUserErrors.userNotFound);
+      return;
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      next(loginUserErrors.incorrectPassword);
     }
   } catch {}
 };
