@@ -1,4 +1,3 @@
-import exp from "constants";
 import type { NextFunction, Response } from "express";
 import User from "../../../database/models/User";
 import { getRandomUserList } from "../../../factories/usersFactory";
