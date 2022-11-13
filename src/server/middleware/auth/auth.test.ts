@@ -1,8 +1,8 @@
 import type { Request, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { authErrors } from "../../../CustomError/errors";
 import auth from "./auth";
-import jwt from "jsonwebtoken";
 import type { CustomRequest } from "../../controllers/profilesControllers.ts/types";
 
 const req: Partial<Request> = {};

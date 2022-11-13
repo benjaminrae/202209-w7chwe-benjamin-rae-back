@@ -14,6 +14,10 @@ export interface LoginUserBody {
 
 export type UserStructure = InferSchemaType<typeof userSchema>;
 
+export interface UserWithIdStructure extends UserStructure {
+  _id: string;
+}
+
 export interface UserTokenPayload extends JwtPayload {
   username: string;
   id: string;

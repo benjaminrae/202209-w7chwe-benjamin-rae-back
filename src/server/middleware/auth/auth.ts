@@ -3,8 +3,8 @@ import type { CustomRequest } from "../../controllers/profilesControllers.ts/typ
 import type { UserTokenPayload } from "../../controllers/usersControllers/types";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";
-import environment from "../../../loadEnvironment";
-import { authErrors } from "../../../CustomError/errors";
+import environment from "../../../loadEnvironment.js";
+import { authErrors } from "../../../CustomError/errors.js";
 
 const { jwtSecret } = environment;
 
