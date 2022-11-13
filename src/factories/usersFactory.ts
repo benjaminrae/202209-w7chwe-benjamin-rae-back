@@ -1,6 +1,6 @@
 import { Factory } from "fishery";
 import { faker } from "@faker-js/faker";
-import type { UserStructure } from "../server/controllers/types";
+import type { UserStructure } from "../server/controllers/usersControllers/types";
 
 const usersFactory = Factory.define<UserStructure>(() => ({
   username: faker.internet.userName(),

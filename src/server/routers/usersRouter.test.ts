@@ -8,7 +8,10 @@ import routes from "./routes";
 import { getRandomUser } from "../../factories/usersFactory";
 import environment from "../../loadEnvironment";
 import User from "../../database/models/User";
-import type { LoginUserBody, RegisterUserBody } from "../controllers/types";
+import type {
+  LoginUserBody,
+  RegisterUserBody,
+} from "../controllers/usersControllers/types";
 
 const { saltLength } = environment;
 

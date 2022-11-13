@@ -1,10 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { loginUserErrors, registerUserErrors } from "../../CustomError/errors";
+import {
+  loginUserErrors,
+  registerUserErrors,
+} from "../../../CustomError/errors";
 import type { LoginUserBody, RegisterUserBody } from "./types";
 import { loginUser, registerUser } from "./usersControllers";
-import User from "../../database/models/User";
+import User from "../../../database/models/User";
 import mongoose from "mongoose";
 
 beforeEach(() => {

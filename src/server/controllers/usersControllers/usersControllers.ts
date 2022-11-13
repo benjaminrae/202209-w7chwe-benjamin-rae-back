@@ -1,17 +1,17 @@
-import environment from "../../loadEnvironment.js";
+import environment from "../../../loadEnvironment.js";
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {
   loginUserErrors,
   registerUserErrors,
-} from "../../CustomError/errors.js";
+} from "../../../CustomError/errors.js";
 import type {
   LoginUserBody,
   RegisterUserBody,
   UserTokenPayload,
 } from "./types";
-import User from "../../database/models/User.js";
+import User from "../../../database/models/User.js";
 
 const { saltLength, jwtSecret } = environment;
 
