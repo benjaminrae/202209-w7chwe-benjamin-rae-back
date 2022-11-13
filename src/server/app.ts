@@ -2,10 +2,11 @@ import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 import { generalError, unknownEndpoint } from "./middleware/errors/errors.js";
+import profilesRouter from "./routers/profilesRouter/profilesRouter.js";
 import routes from "./routers/routes.js";
-import usersRouter from "./routers/usersRouter.js";
+import usersRouter from "./routers/usersRouter/usersRouter.js";
 
-const { usersRoute } = routes;
+const { usersRoute, profilesRoute } = routes;
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.disable("x-powered-by");
 
 app.use(usersRoute, usersRouter);
+app.use(profilesRoute, profilesRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
