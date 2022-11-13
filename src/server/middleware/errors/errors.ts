@@ -2,7 +2,7 @@ import chalk from "chalk";
 import debugConfig from "debug";
 import type { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
-import type CustomError from "../../CustomError/CustomError";
+import type CustomError from "../../../CustomError/CustomError";
 
 const debug = debugConfig("feisbuk:server:middleware:errors");
 

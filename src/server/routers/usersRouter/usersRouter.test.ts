@@ -1,14 +1,17 @@
 import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import bcrypt from "bcryptjs";
-import connectDb from "../../database/connectDb";
+import connectDb from "../../../database/connectDb";
 import mongoose from "mongoose";
-import app from "../app";
-import routes from "./routes";
-import { getRandomUser } from "../../factories/usersFactory";
-import environment from "../../loadEnvironment";
-import User from "../../database/models/User";
-import type { LoginUserBody, RegisterUserBody } from "../controllers/types";
+import app from "../../app";
+import routes from "../routes";
+import { getRandomUser } from "../../../factories/usersFactory";
+import environment from "../../../loadEnvironment";
+import User from "../../../database/models/User";
+import type {
+  LoginUserBody,
+  RegisterUserBody,
+} from "../../controllers/usersControllers/types";
 
 const { saltLength } = environment;
 
