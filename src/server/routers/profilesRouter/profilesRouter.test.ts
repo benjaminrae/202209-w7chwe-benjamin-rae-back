@@ -35,14 +35,30 @@ describe("Given a GET /profiles endpoint", () => {
   const profilesEndpoint = "/profiles";
 
   describe("When it receives a request with valid token and there are 10 profiles in the database", () => {
-    test("Then it should response with a list of 9 profiles and status 200", async () => {
+    test("Then it should respond with a list of 9 profiles and status 200", async () => {
+      const expectedStatus = 200;
+
       const response = await request(app)
         .get(profilesEndpoint)
         .set("Authorization", `Bearer ${requestUserToken}`)
-        .expect(200);
+        .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("profiles");
       expect(response.body.profiles).toHaveLength(9);
+    });
+  });
+
+  describe("When it receives a request with an invalid token", () => {
+    test("Then it should respond with status 401 and message 'Invalid token'", async () => {
+      const expectedStatus = 401;
+      const expectedError = "Invalid token";
+
+      const response = await request(app)
+        .get(profilesEndpoint)
+        .set("Authorization", "Bearer 1234")
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error", expectedError);
     });
   });
 });
