@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
+import auth from "./middleware/auth/auth.js";
 import { generalError, unknownEndpoint } from "./middleware/errors/errors.js";
 import profilesRouter from "./routers/profilesRouter/profilesRouter.js";
 import routes from "./routers/routes.js";
@@ -16,7 +17,7 @@ app.use(express.json());
 app.disable("x-powered-by");
 
 app.use(usersRoute, usersRouter);
-app.use(profilesRoute, profilesRouter);
+app.use(profilesRoute, auth, profilesRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
