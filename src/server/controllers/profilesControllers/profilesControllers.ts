@@ -31,14 +31,16 @@ export const editProfile = async (
 ) => {
   const { userId } = req;
 
-  const profile = req.body;
+  const receivedProfile = req.body;
 
   try {
-    const updatedProfile = await User.findByIdAndUpdate(userId, profile, {
+    const profile = await User.findByIdAndUpdate(userId, receivedProfile, {
       returnDocument: "after",
-    }).select("-password");
+    })
+      .select("-password")
+      .exec();
 
-    res.status(201).json({ profile: updatedProfile });
+    res.status(201).json({ profile });
   } catch (error: unknown) {
     next(error);
   }

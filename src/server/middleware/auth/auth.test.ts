@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { authErrors } from "../../../CustomError/errors";
 import auth from "./auth";
-import type { CustomRequest } from "../../controllers/profilesControllers.ts/types";
+import type { CustomRequest } from "../../controllers/profilesControllers/types";
 
 const req: Partial<Request> = {};
 
