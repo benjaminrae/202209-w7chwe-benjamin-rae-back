@@ -1,5 +1,5 @@
 import type { NextFunction, Response } from "express";
-import type { CustomRequest } from "../../controllers/profilesControllers.ts/types";
+import type { CustomRequest } from "../../controllers/profilesControllers/types";
 import type { UserTokenPayload } from "../../controllers/usersControllers/types";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";

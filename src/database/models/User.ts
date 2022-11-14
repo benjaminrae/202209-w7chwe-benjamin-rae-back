@@ -30,6 +30,12 @@ export const userSchema = new Schema({
   birthday: {
     type: String,
   },
+  friends: {
+    type: [Schema.Types.ObjectId],
+  },
+  enemies: {
+    type: [Schema.Types.ObjectId],
+  },
 });
 
 const User = model("User", userSchema, "users");
