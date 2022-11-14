@@ -4,7 +4,12 @@ import {
   getRandomUser,
   getRandomUserList,
 } from "../../../factories/usersFactory";
-import { editProfile, getProfiles } from "./profilesControllers";
+import type { UserWithIdStructure } from "../usersControllers/types";
+import {
+  editProfile,
+  getProfileById,
+  getProfiles,
+} from "./profilesControllers";
 import type { CustomRequest } from "./types";
 
 afterEach(() => {
@@ -13,6 +18,7 @@ afterEach(() => {
 
 const req: Partial<CustomRequest> = {
   userId: "1234",
+  params: {},
 };
 
 const res: Partial<Response> = {
@@ -116,6 +122,83 @@ describe("Given an editProfile controller", () => {
       });
 
       await editProfile(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given a getProfileById controller", () => {
+  const user = getRandomUser() as UserWithIdStructure;
+
+  describe(`When it receives a request with the id ${user._id}`, () => {
+    test("Then it should invoke response's status method with 200 and json with the user's profile", async () => {
+      const params = {
+        profileId: user._id,
+      };
+      req.params = params;
+      const expectedStatus = 200;
+
+      User.findById = jest.fn().mockReturnValue({
+        select: jest
+          .fn()
+          .mockReturnValue({ exec: jest.fn().mockReturnValue(user) }),
+      });
+
+      await getProfileById(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith({ profile: user });
+    });
+  });
+
+  describe("When it receives a request and User.findById rejects", () => {
+    test("Then it should call next with an error", async () => {
+      const params = {
+        profileId: user._id,
+      };
+      req.params = params;
+      const error = new Error();
+
+      User.findById = jest.fn().mockReturnValue({
+        select: jest
+          .fn()
+          .mockReturnValue({ exec: jest.fn().mockRejectedValue(error) }),
+      });
+
+      await getProfileById(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe("When it receives a user id that is not on the database", () => {
+    test("Then it should call next with an error with message 'Profile not found'", async () => {
+      const params = {
+        profileId: user._id,
+      };
+      req.params = params;
+      const error = new Error("Profile not found");
+
+      User.findById = jest.fn().mockReturnValue({
+        select: jest
+          .fn()
+          .mockReturnValue({ exec: jest.fn().mockReturnValue(null) }),
+      });
+
+      await getProfileById(
         req as CustomRequest,
         res as Response,
         next as NextFunction

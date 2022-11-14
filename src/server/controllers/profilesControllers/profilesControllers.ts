@@ -1,7 +1,7 @@
 import type { CustomRequest, EditProfileRequestBody } from "./types";
 import type { NextFunction, Response } from "express";
 import User from "../../../database/models/User.js";
-import CustomError from "../../../CustomError/CustomError";
+import CustomError from "../../../CustomError/CustomError.js";
 
 export const getProfiles = async (
   req: CustomRequest,
@@ -62,7 +62,7 @@ export const getProfileById = async (
   const { profileId } = req.params;
 
   try {
-    const profile = await User.findById(profileId);
+    const profile = await User.findById(profileId).select("-password").exec();
 
     if (!profile) {
       next(new CustomError("Profile not found", 404, "Profile not found"));
@@ -71,7 +71,7 @@ export const getProfileById = async (
     }
 
     res.status(200).json({ profile });
-  } catch (error) {
+  } catch (error: unknown) {
     next(error);
   }
 };
