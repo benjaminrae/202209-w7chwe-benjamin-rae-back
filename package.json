@@ -27,6 +27,7 @@
     "@types/jest": "^29.2.2",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/morgan": "^1.9.3",
+    "@types/multer": "^1.4.7",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "eslint": "^8.26.0",
@@ -43,6 +44,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.1.0",
     "@types/supertest": "^2.0.12",
     "bcryptjs": "^2.4.3",
     "chalk": "^4.1.2",
@@ -54,6 +56,7 @@
     "fishery": "^2.2.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1"
   }
 }

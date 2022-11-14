@@ -40,7 +40,14 @@ export const editProfile = async (
       .select("-password")
       .exec();
 
-    res.status(201).json({ profile });
+    res.status(201).json({
+      profile: {
+        ...profile.toJSON(),
+        image: profile.image
+          ? `${req.protocol}://${req.get("host")}/${profile.image}`
+          : "",
+      },
+    });
   } catch (error: unknown) {
     next(error);
   }

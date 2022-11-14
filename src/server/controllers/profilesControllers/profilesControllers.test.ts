@@ -75,14 +75,18 @@ describe("Given an editProfile controller", () => {
       const profile = {
         ...user,
         email: "newEmail@feisbuk.com",
+        image: "",
       };
       req.body = profile;
       const expectedStatus = 201;
 
       User.findByIdAndUpdate = jest.fn().mockReturnValue({
-        select: jest
-          .fn()
-          .mockReturnValue({ exec: jest.fn().mockReturnValue(profile) }),
+        select: jest.fn().mockReturnValue({
+          exec: jest.fn().mockReturnValue({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            toJSON: jest.fn().mockReturnValue(profile),
+          }),
+        }),
       });
 
       await editProfile(

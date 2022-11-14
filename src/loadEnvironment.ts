@@ -9,6 +9,9 @@ interface Environment {
   mongoDbUri: string;
   saltLength: number;
   jwtSecret: string;
+  supabaseBucket: string;
+  supabaseKey: string;
+  supabaseUrl: string;
 }
 
 const {
@@ -18,6 +21,9 @@ const {
   MONGO_DB_URI: mongoDbUri,
   SALT_LENGTH: saltLength,
   JWT_SECRET: jwtSecret,
+  SUPABASE_URL: supabaseUrl,
+  SUPABASE_KEY: supabaseKey,
+  SUPABASE_BUCKET: supabaseBucket,
 } = process.env;
 
 const environment: Environment = {
@@ -27,6 +33,9 @@ const environment: Environment = {
   mongoDbUri,
   saltLength: +saltLength,
   jwtSecret,
+  supabaseBucket,
+  supabaseKey,
+  supabaseUrl,
 };
 
 export default environment;
