@@ -62,3 +62,29 @@ describe("Given a GET /profiles endpoint", () => {
     });
   });
 });
+
+describe("Given a PUT /profiles/edit endpoint", () => {
+  const endpoint = "/profiles/edit";
+
+  describe("When it receives a request with a valid user token and a new email 'newEmail@feisbuk.com'", () => {
+    test("Then it should respond with status 201 and the users profile with the updated email", async () => {
+      const newEmail = "newEmail@feisbuk.com";
+      const expectedUser = {
+        ...requestUser,
+        email: newEmail,
+        id: requestUser._id,
+      };
+      delete expectedUser._id;
+      delete expectedUser.password;
+      const expectedStatus = 201;
+
+      const response = await request(app)
+        .put(endpoint)
+        .send({ email: newEmail })
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("profile");
+    });
+  });
+});
