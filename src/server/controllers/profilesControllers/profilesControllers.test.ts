@@ -1,4 +1,3 @@
-import { jsxNamespacedName } from "@babel/types";
 import type { NextFunction, Response } from "express";
 import User from "../../../database/models/User";
 import {
