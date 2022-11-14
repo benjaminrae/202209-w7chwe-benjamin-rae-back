@@ -31,9 +31,7 @@ const handleImage = async (
   const fileExtension = path.extname(req.file.originalname);
   const fileBaseName = path.basename(req.file.originalname, fileExtension);
   const newFileName = `${fileBaseName}-${timeStamp}${fileExtension}`;
-  const newFilePath = path
-    .join("assets", "images", newFileName)
-    .replaceAll(`\\`, "/");
+  const newFilePath = path.join("assets", "images", newFileName);
 
   try {
     await fs.rename(
