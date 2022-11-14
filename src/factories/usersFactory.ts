@@ -11,6 +11,10 @@ const usersFactory = Factory.define<UserStructure>(() => ({
   location: faker.address.cityName(),
   image: faker.image.avatar(),
   _id: new mongoose.Types.ObjectId(),
+  enemies: [],
+  friends: [],
+  backupImage: faker.image.avatar(),
+  bio: faker.random.words(20),
 }));
 
 export const getRandomUser = () => usersFactory.build();
