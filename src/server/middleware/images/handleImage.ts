@@ -6,7 +6,7 @@ import type { CustomRequest } from "../../controllers/profilesControllers/types"
 
 import environment from "../../../loadEnvironment.js";
 import type { UserStructure } from "../../controllers/usersControllers/types";
-import { runInNewContext } from "vm";
+
 const { supabaseBucket, supabaseKey, supabaseUrl } = environment;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
