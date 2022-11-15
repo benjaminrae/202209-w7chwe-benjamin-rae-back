@@ -92,12 +92,10 @@ describe("Given a PUT /profiles/edit endpoint", () => {
 
 describe("Given a PUT /profiles/edit endpoint", () => {
   const endpoint = "/profiles/edit";
-  const formData = new FormData();
 
   describe("When it receives a request with a correct token and image: testimage.jpg", () => {
     test("Then it should respond with status 201 and the updated user profile", async () => {
       const fileData = await fs.readFile("src/mocks/testimage.jpg");
-      formData.append("image", new Blob([fileData]));
       const expectedStatus = 201;
 
       const response = await request(app)
