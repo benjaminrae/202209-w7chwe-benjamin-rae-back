@@ -13,3 +13,12 @@ export interface CustomRequest<
 export interface EditProfileRequestBody {
   profile: Partial<UserStructure>;
 }
+
+export interface UpdateRelationshipBody {
+  currentUser: string;
+  targetUser: string;
+  targetUserId: string;
+  relationship: Relationships;
+}
+
+export type Relationships = "friends" | "enemies" | "removed";

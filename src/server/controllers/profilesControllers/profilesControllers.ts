@@ -1,7 +1,13 @@
-import type { CustomRequest, EditProfileRequestBody } from "./types";
+import fs from "fs/promises";
+import type {
+  CustomRequest,
+  EditProfileRequestBody,
+  UpdateRelationshipBody,
+} from "./types";
 import type { NextFunction, Response } from "express";
 import User from "../../../database/models/User.js";
 import CustomError from "../../../CustomError/CustomError.js";
+import mongoose from "mongoose";
 
 export const getProfiles = async (
   req: CustomRequest,
@@ -31,7 +37,6 @@ export const editProfile = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-
   const receivedProfile = req.body;
 
   try {
@@ -71,6 +76,63 @@ export const getProfileById = async (
     }
 
     res.status(200).json({ profile });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const updateRelationship = async (
+  req: CustomRequest<
+    Record<string, unknown>,
+    Record<string, unknown>,
+    UpdateRelationshipBody
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req;
+
+  const { currentUser, relationship, targetUser, targetUserId } = req.body;
+
+  const relationshipText =
+    relationship === "removed"
+      ? `Removed relationship: ${currentUser} & ${targetUser}`
+      : `New relationship: ${currentUser} & ${targetUser} (${relationship})`;
+
+  try {
+    await fs.appendFile(
+      "src/server/relationships.txt",
+      relationshipText + "\n"
+    );
+
+    const user = await User.findById(userId);
+
+    if (relationship === "removed") {
+      user.friends = user.friends.filter(
+        (friend) => friend.toString() !== targetUserId
+      );
+      user.enemies = user.enemies.filter(
+        (enemy) => enemy.toString() !== targetUserId
+      );
+    }
+
+    if (relationship === "friends") {
+      user.friends.push(new mongoose.Types.ObjectId(targetUserId));
+      user.enemies = user.enemies.filter(
+        (enemy) => enemy.toString() !== targetUserId
+      );
+    }
+
+    if (relationship === "enemies") {
+      user.friends = user.friends.filter(
+        (friend) => friend.toString() !== targetUserId
+      );
+      user.enemies.push(new mongoose.Types.ObjectId(targetUserId));
+    }
+
+    await user.save();
+
+    res.status(201).json({ profile: user });
   } catch (error: unknown) {
     next(error);
   }
