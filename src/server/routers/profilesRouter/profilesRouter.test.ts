@@ -1,3 +1,4 @@
+import fs from "fs/promises";
 import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
@@ -82,6 +83,27 @@ describe("Given a PUT /profiles/edit endpoint", () => {
         .put(endpoint)
         .send({ email: newEmail })
         .set("Authorization", `Bearer ${requestUserToken}`)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("profile");
+    });
+  });
+});
+
+describe("Given a PUT /profiles/edit endpoint", () => {
+  const endpoint = "/profiles/edit";
+  const formData = new FormData();
+
+  describe("When it receives a request with a correct token and image: testimage.jpg", () => {
+    test("Then it should respond with status 201 and the updated user profile", async () => {
+      const fileData = await fs.readFile("src/mocks/testimage.jpg");
+      formData.append("image", new Blob([fileData]));
+      const expectedStatus = 201;
+
+      const response = await request(app)
+        .put(endpoint)
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .attach("image", fileData, "testimage.jpg")
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("profile");

@@ -37,7 +37,6 @@ export const editProfile = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-
   const receivedProfile = req.body;
 
   try {

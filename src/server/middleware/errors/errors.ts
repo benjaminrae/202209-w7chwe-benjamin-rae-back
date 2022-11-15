@@ -1,3 +1,4 @@
+import "../../../loadEnvironment.js";
 import chalk from "chalk";
 import debugConfig from "debug";
 import type { NextFunction, Request, Response } from "express";
@@ -30,6 +31,7 @@ export const generalError = (
   const { message, statusCode, publicMessage } = error;
 
   debug(chalk.red(message));
+  debug(chalk.yellow(error));
 
   const responseMessage = publicMessage || "There was an error on the server";
   const responseStatus = statusCode ?? 500;
