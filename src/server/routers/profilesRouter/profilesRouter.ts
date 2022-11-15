@@ -9,6 +9,8 @@ import {
 import path from "path";
 import handleImage from "../../middleware/images/handleImage.js";
 import routes from "../routes.js";
+import updateRelationshipSchema from "../../schemas/updateRelationshipSchema.js";
+import { validate } from "express-validation";
 
 const upload = multer({ dest: path.join("assets", "images") });
 
@@ -23,6 +25,10 @@ profilesRouter.put(editRoute, upload.single("image"), handleImage, editProfile);
 
 profilesRouter.get(profileRoute, getProfileById);
 
-profilesRouter.put(relationshipRoute, updateRelationship);
+profilesRouter.put(
+  relationshipRoute,
+  validate(updateRelationshipSchema, {}, { abortEarly: false }),
+  updateRelationship
+);
 
 export default profilesRouter;

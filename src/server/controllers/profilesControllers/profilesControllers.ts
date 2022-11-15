@@ -7,7 +7,6 @@ import type {
 import type { NextFunction, Response } from "express";
 import User from "../../../database/models/User.js";
 import CustomError from "../../../CustomError/CustomError.js";
-import { ObjectId } from "bson";
 import mongoose from "mongoose";
 
 export const getProfiles = async (
