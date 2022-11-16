@@ -1,4 +1,5 @@
 import type { NextFunction, Response } from "express";
+import fs from "fs/promises";
 import User from "../../../database/models/User";
 import {
   getRandomUser,
@@ -9,8 +10,9 @@ import {
   editProfile,
   getProfileById,
   getProfiles,
+  updateRelationship,
 } from "./profilesControllers";
-import type { CustomRequest } from "./types";
+import type { CustomRequest, UpdateRelationshipBody } from "./types";
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -205,6 +207,38 @@ describe("Given a getProfileById controller", () => {
       );
 
       expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given the updateRelationship controller", () => {
+  const currentUser = getRandomUser() as UserWithIdStructure;
+  const targetUser = getRandomUser() as UserWithIdStructure;
+  describe(`When it receives an Authorized request from ${currentUser.username} and a new 'friends' relationship with ${targetUser.username}`, () => {
+    test("Then it should invoke response's status method with 201 and the updated profile", async () => {
+      const relationshipBody: UpdateRelationshipBody = {
+        currentUser: currentUser.username,
+        relationship: "friends",
+        targetUser: targetUser.username,
+        targetUserId: targetUser._id,
+      };
+
+      req.body = relationshipBody;
+      req.userId = currentUser._id;
+
+      fs.appendFile = jest.fn().mockResolvedValue(undefined);
+
+      User.findById = jest
+        .fn()
+        .mockResolvedValue({ ...currentUser, save: jest.fn() });
+
+      await updateRelationship(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(201);
     });
   });
 });
