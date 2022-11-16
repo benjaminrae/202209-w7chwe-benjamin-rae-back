@@ -1,5 +1,6 @@
 import type { NextFunction, Response } from "express";
 import fs from "fs/promises";
+import type mongoose from "mongoose";
 import User from "../../../database/models/User";
 import {
   getRandomUser,
@@ -214,6 +215,8 @@ describe("Given a getProfileById controller", () => {
 describe("Given the updateRelationship controller", () => {
   const currentUser = getRandomUser() as UserWithIdStructure;
   const targetUser = getRandomUser() as UserWithIdStructure;
+  const save = jest.fn();
+
   describe(`When it receives an Authorized request from ${currentUser.username} and a new 'friends' relationship with ${targetUser.username}`, () => {
     test("Then it should invoke response's status method with 201 and the updated profile", async () => {
       const relationshipBody: UpdateRelationshipBody = {
@@ -222,15 +225,24 @@ describe("Given the updateRelationship controller", () => {
         targetUser: targetUser.username,
         targetUserId: targetUser._id,
       };
+      const expectedProfile = {
+        ...currentUser,
+        friends: [targetUser._id],
+        enemies: [] as mongoose.Types.ObjectId[],
+        save,
+      };
 
       req.body = relationshipBody;
       req.userId = currentUser._id;
 
       fs.appendFile = jest.fn().mockResolvedValue(undefined);
 
-      User.findById = jest
-        .fn()
-        .mockResolvedValue({ ...currentUser, save: jest.fn() });
+      User.findById = jest.fn().mockResolvedValue({
+        ...currentUser,
+        friends: [] as mongoose.Types.ObjectId[],
+        enemies: [] as mongoose.Types.ObjectId[],
+        save,
+      });
 
       await updateRelationship(
         req as CustomRequest,
@@ -239,6 +251,84 @@ describe("Given the updateRelationship controller", () => {
       );
 
       expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ profile: expectedProfile });
+    });
+  });
+
+  describe(`When it receives an Authorized request from ${currentUser.username} and a new 'enemies' relationship with ${targetUser.username}`, () => {
+    test("Then it should invoke response's status method with 201 and the updated profile", async () => {
+      const relationshipBody: UpdateRelationshipBody = {
+        currentUser: currentUser.username,
+        relationship: "enemies",
+        targetUser: targetUser.username,
+        targetUserId: targetUser._id,
+      };
+      const expectedProfile = {
+        ...currentUser,
+        enemies: [targetUser._id],
+        friends: [] as mongoose.Types.ObjectId[],
+        save,
+      };
+
+      req.body = relationshipBody;
+      req.userId = currentUser._id;
+
+      fs.appendFile = jest.fn().mockResolvedValue(undefined);
+
+      User.findById = jest.fn().mockResolvedValue({
+        ...currentUser,
+        friends: [] as mongoose.Types.ObjectId[],
+        enemies: [] as mongoose.Types.ObjectId[],
+        save,
+      });
+
+      await updateRelationship(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ profile: expectedProfile });
+    });
+  });
+
+  describe(`When it receives an Authorized request from ${currentUser.username} and a new 'removed' relationship with ${targetUser.username}`, () => {
+    test("Then it should invoke response's status method with 201 and the updated profile", async () => {
+      const relationshipBody: UpdateRelationshipBody = {
+        currentUser: currentUser.username,
+        relationship: "removed",
+        targetUser: targetUser.username,
+        targetUserId: targetUser._id,
+      };
+
+      const expectedProfile = {
+        ...currentUser,
+        friends: [] as mongoose.Types.ObjectId[],
+        enemies: [] as mongoose.Types.ObjectId[],
+        save,
+      };
+
+      req.body = relationshipBody;
+      req.userId = currentUser._id;
+
+      fs.appendFile = jest.fn().mockResolvedValue(undefined);
+
+      User.findById = jest.fn().mockResolvedValue({
+        ...currentUser,
+        friends: [] as mongoose.Types.ObjectId[],
+        enemies: [] as mongoose.Types.ObjectId[],
+        save,
+      });
+
+      await updateRelationship(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({ profile: expectedProfile });
     });
   });
 });
