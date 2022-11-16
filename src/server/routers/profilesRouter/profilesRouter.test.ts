@@ -94,17 +94,30 @@ describe("Given a PUT /profiles/edit endpoint", () => {
   const endpoint = "/profiles/edit";
 
   describe("When it receives a request with a correct token and image: testimage.jpg", () => {
-    test("Then it should respond with status 201 and the updated user profile", async () => {
+    test("Then it should respond with status 201 and the updated user profile with an image and backupImage with links to the new file", async () => {
+      const timeStamp = Date.now();
+      Date.now = jest.fn().mockReturnValue(timeStamp);
       const fileData = await fs.readFile("src/mocks/testimage.jpg");
       const expectedStatus = 201;
+      const expectedFileName = `testimage-${timeStamp}.jpg`;
 
-      const response = await request(app)
-        .put(endpoint)
-        .set("Authorization", `Bearer ${requestUserToken}`)
-        .attach("image", fileData, "testimage.jpg")
-        .expect(expectedStatus);
+      const response: { body: { profile: UserWithIdStructure } } =
+        await request(app)
+          .put(endpoint)
+          .set("Authorization", `Bearer ${requestUserToken}`)
+          .attach("image", fileData, `${__dirname}/testimage.jpg`)
+          .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("profile");
+
+      const {
+        body: {
+          profile: { image, backupImage },
+        },
+      } = response;
+
+      expect(image).toContain(expectedFileName);
+      expect(backupImage).toContain(expectedFileName);
     });
   });
 });
