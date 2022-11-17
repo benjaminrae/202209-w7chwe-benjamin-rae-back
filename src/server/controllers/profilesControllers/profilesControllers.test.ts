@@ -9,6 +9,7 @@ import {
 import type { UserWithIdStructure } from "../usersControllers/types";
 import {
   editProfile,
+  getProfileAndRelationshipsById,
   getProfileById,
   getProfiles,
   updateRelationship,
@@ -329,6 +330,77 @@ describe("Given the updateRelationship controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({ profile: expectedProfile });
+    });
+  });
+});
+
+describe("Given a getProfileAndRelationships controller", () => {
+  const user = getRandomUser() as UserWithIdStructure;
+  const friend = getRandomUser() as UserWithIdStructure;
+
+  describe(`When it receives id ${user._id} and that user has friend ${friend._id}`, () => {
+    test("Then response's method status should be invoked with 201 and response with the user's profile and the friend's full profile in their friends", async () => {
+      const params = {
+        profileId: user._id,
+      };
+      req.params = params;
+      const expectedResponse = { ...user, friends: [friend] };
+      const expectedStatus = 200;
+
+      User.findById = jest.fn().mockReturnValueOnce({
+        select: jest.fn().mockReturnValueOnce({
+          exec: jest.fn().mockReturnValueOnce({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            toJSON: jest.fn().mockReturnValueOnce(user),
+          }),
+        }),
+      });
+
+      User.find = jest
+        .fn()
+        .mockReturnValueOnce({
+          select: jest
+            .fn()
+            .mockReturnValue({ exec: jest.fn().mockReturnValue([friend]) }),
+        })
+        .mockReturnValueOnce({
+          select: jest
+            .fn()
+            .mockReturnValue({ exec: jest.fn().mockReturnValue([]) }),
+        });
+
+      await getProfileAndRelationshipsById(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith({ profile: expectedResponse });
+    });
+  });
+
+  describe("When it receives a next function and User.findById throws an error", () => {
+    test("Then next should be invoked with the thrown error", async () => {
+      const params = {
+        profileId: user._id,
+      };
+      req.params = params;
+      const error = new Error("There was a problem");
+
+      User.findById = jest.fn().mockReturnValueOnce({
+        select: jest.fn().mockReturnValueOnce({
+          exec: jest.fn().mockRejectedValue(error),
+        }),
+      });
+
+      await getProfileAndRelationshipsById(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
