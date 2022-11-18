@@ -6,6 +6,7 @@ const routes = {
   profileRoute: "/profile/:profileId",
   editRoute: "/edit",
   relationshipRoute: "/relationship",
+  completeProfileRoute: "/complete-profile/:profileId",
 };
 
 export default routes;

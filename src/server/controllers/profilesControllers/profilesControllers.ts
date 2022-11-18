@@ -8,6 +8,7 @@ import type { NextFunction, Response } from "express";
 import User from "../../../database/models/User.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import mongoose from "mongoose";
+import type { UserStructure } from "../usersControllers/types";
 
 export const getProfiles = async (
   req: CustomRequest,
@@ -133,6 +134,44 @@ export const updateRelationship = async (
     await user.save();
 
     res.status(201).json({ profile: user });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const getProfileAndRelationshipsById = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { profileId } = req.params;
+
+  try {
+    const user = await User.findById(profileId).select("-password").exec();
+
+    const friends: UserStructure[] = await User.find({
+      _id: {
+        $in: user.friends,
+      },
+    })
+      .select("-password")
+      .exec();
+
+    const enemies: UserStructure[] = await User.find({
+      _id: {
+        $in: user.enemies,
+      },
+    })
+      .select("-password")
+      .exec();
+
+    const userProfileAndFriends = {
+      ...user.toJSON(),
+      friends,
+      enemies,
+    };
+
+    res.status(200).json({ profile: userProfileAndFriends });
   } catch (error: unknown) {
     next(error);
   }
